@@ -12,7 +12,9 @@ export class LogService {
     text: null,
     date: null
   });
+  private stateSource = new BehaviorSubject<boolean>(true);
   selectedLog = this.logSource.asObservable();
+  stateClear = this.stateSource.asObservable();
 
   constructor() {
     this.logs = [
@@ -46,8 +48,15 @@ export class LogService {
     this.logs.unshift(log);
   }
 
+  clearState() {
+    this.stateSource.next(true);
+  }
+
   updateLog(log: Log) {
-    this.logs[this.logs.findIndex(curLog => curLog.id === log.id)] = log;
+    const foundLogById = this.logs.findIndex(curLog => curLog.id === log.id);
+    this.logs[foundLogById] = log;
+    this.logs.splice(foundLogById, 1);
+    this.logs.unshift(log);
   }
 
   deleteLog(log: Log): Observable<Log[]> {
